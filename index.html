@@ -79,7 +79,7 @@ button.go { font: inherit; font-weight: 600; padding: .65rem 1.2rem; border: 0; 
 .stage.open .tap { opacity: 0; }
 
 /* The tag */
-.tag { position: absolute; left: 50%; top: 50%; width: 86%; transform: translate(-50%, -30%) scale(.6) rotate(-8deg); opacity: 0;
+.tag { pointer-events: none; position: absolute; left: 50%; top: 50%; width: 86%; transform: translate(-50%, -30%) scale(.6) rotate(-8deg); opacity: 0;
   background: var(--kraft); color: var(--kraft-ink); border-radius: 10px 10px 10px 10px; padding: 1.4rem 1rem 1.2rem;
   box-shadow: 0 12px 28px rgba(0,0,0,.22); transition: transform .9s cubic-bezier(.2,1.3,.4,1) .35s, opacity .5s ease .35s; }
 .tag::before { content: ""; position: absolute; top: .6rem; left: 50%; width: .8rem; height: .8rem; margin-left: -.4rem; border-radius: 50%; background: var(--bg); box-shadow: inset 0 0 0 2px rgba(0,0,0,.15); }
@@ -179,8 +179,8 @@ form.addEventListener("submit", async e => {
   gift.focus();
 });
 
-gift.addEventListener("click", () => {
-  if (!name) return;
+stage.addEventListener("click", () => {
+  if (!name || stage.classList.contains("open")) return;
   document.getElementById("who").textContent = name;
   stage.classList.add("open");
   gift.disabled = true;
