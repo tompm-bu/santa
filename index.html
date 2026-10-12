@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}[hidden]{display:none!important}</style>
+<title>Family Secret Santa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;600&family=Caveat:wght@600&display=swap">
+<style>
+/* Layout: one centered column, a wrapped gift that tears open to a kraft gift tag */
+:root {
+  --bg: #eef2ee;
+  --fg: #1d2a24;
+  --muted: #5b6b63;
+  --pine: #1f4a3a;
+  --berry: #b0263a;
+  --berry-dark: #8a1a2c;
+  --kraft: #d9bb8f;
+  --kraft-ink: #3b2a17;
+  --snow: rgba(255,255,255,.9);
+  --field: #ffffff;
+  --line: #c9d3cd;
+  --display: "Young Serif", Georgia, serif;
+  --body: "Figtree", system-ui, sans-serif;
+  --hand: "Caveat", "Segoe Print", cursive;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1a15; --fg: #e8efe9; --muted: #9db0a5; --pine: #2f6b55;
+  --berry: #c8364b; --berry-dark: #a32739; --kraft: #cfae7e; --kraft-ink: #2e2010;
+  --snow: rgba(255,255,255,.75); --field: #17251f; --line: #2c3d35; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0f1a15; --fg: #e8efe9; --muted: #9db0a5; --pine: #2f6b55;
+  --berry: #c8364b; --berry-dark: #a32739; --kraft: #cfae7e; --kraft-ink: #2e2010;
+  --snow: rgba(255,255,255,.75); --field: #17251f; --line: #2c3d35; color-scheme: dark }
+
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 16px; }
+#snow { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+main { position: relative; z-index: 1; max-width: 30rem; margin: 0 auto; padding-inline: 16px; padding-block: 2.5rem 3rem;
+  display: flex; flex-direction: column; align-items: center; gap: 1.5rem; text-align: center; }
+.eyebrow { font-size: .75rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0; }
+h1 { font-family: var(--display); font-weight: 400; font-size: clamp(1.9rem, 7vw, 2.6rem); line-height: 1.1; margin: .25rem 0 0; text-wrap: balance; }
+.lede { color: var(--muted); margin: 0; max-width: 26rem; line-height: 1.5; }
+
+form { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; width: 100%; }
+label { width: 100%; font-weight: 600; font-size: .9rem; }
+select { font: inherit; width: 100%; max-width: 16rem; padding: .6rem .5rem; border: 1.5px solid var(--line); border-radius: 10px; background: var(--field); color: var(--fg); }
+select:focus-visible { outline: 3px solid var(--berry); outline-offset: 2px; }
+input { font: inherit; font-size: 1.25rem; letter-spacing: .3em; text-align: center; width: 9rem; padding: .6rem .5rem;
+  border: 1.5px solid var(--line); border-radius: 10px; background: var(--field); color: var(--fg); }
+input:focus-visible, button:focus-visible { outline: 3px solid var(--berry); outline-offset: 2px; }
+button.go { font: inherit; font-weight: 600; padding: .65rem 1.2rem; border: 0; border-radius: 10px; background: var(--pine); color: #fff; cursor: pointer; }
+.err { color: var(--berry); min-height: 1.3em; margin: 0; font-size: .9rem; }
+.hint { font-size: .8rem; color: var(--muted); margin: 0; }
+
+/* The gift */
+.stage { position: relative; width: min(16rem, 80vw); aspect-ratio: 1 / 1.05; max-width: 100%; }
+.gift { position: absolute; inset: 0; border: 0; padding: 0; background: none; cursor: pointer; }
+.gift[disabled] { cursor: default; }
+.box { position: absolute; left: 6%; right: 6%; bottom: 0; top: 24%; background: var(--berry); border-radius: 6px;
+  background-image: radial-gradient(circle at 20% 30%, rgba(255,255,255,.18) 0 4px, transparent 5px),
+                    radial-gradient(circle at 70% 70%, rgba(255,255,255,.18) 0 4px, transparent 5px);
+  background-size: 34px 34px; box-shadow: 0 14px 30px rgba(0,0,0,.18); transition: transform .6s ease, opacity .6s ease; }
+.lid { position: absolute; left: 2%; right: 2%; top: 14%; height: 15%; background: var(--berry-dark); border-radius: 6px;
+  transition: transform .7s cubic-bezier(.3,1.4,.5,1), opacity .7s ease; transform-origin: 20% 100%; }
+.ribbon-v { position: absolute; top: 14%; bottom: 0; left: 50%; width: 12%; transform: translateX(-50%); background: var(--kraft); transition: opacity .4s ease; }
+.ribbon-h { position: absolute; left: 6%; right: 6%; top: 55%; height: 11%; background: var(--kraft); transition: opacity .4s ease; }
+.bow { position: absolute; top: 0; left: 50%; width: 44%; height: 18%; transform: translateX(-50%); transition: transform .7s ease, opacity .5s ease; }
+.bow::before, .bow::after { content: ""; position: absolute; top: 10%; width: 48%; height: 90%; border: .55rem solid var(--kraft); border-radius: 50% 50% 10% 50%; box-sizing: border-box; }
+.bow::before { left: 0; transform: rotate(-18deg); }
+.bow::after { right: 0; transform: scaleX(-1) rotate(-18deg); }
+.tap { position: absolute; bottom: -2rem; left: 0; right: 0; font-size: .85rem; color: var(--muted); }
+.stage.locked .gift { filter: saturate(.55); opacity: .75; }
+.stage.open .lid { transform: translate(40%, -140%) rotate(28deg); opacity: 0; }
+.stage.open .bow { transform: translate(-50%, -160%) rotate(-30deg); opacity: 0; }
+.stage.open .ribbon-v, .stage.open .ribbon-h { opacity: 0; }
+.stage.open .box { transform: translateY(18%) scale(.92); opacity: 0; }
+.stage.open .tap { opacity: 0; }
+
+/* The tag */
+.tag { position: absolute; left: 50%; top: 50%; width: 86%; transform: translate(-50%, -30%) scale(.6) rotate(-8deg); opacity: 0;
+  background: var(--kraft); color: var(--kraft-ink); border-radius: 10px 10px 10px 10px; padding: 1.4rem 1rem 1.2rem;
+  box-shadow: 0 12px 28px rgba(0,0,0,.22); transition: transform .9s cubic-bezier(.2,1.3,.4,1) .35s, opacity .5s ease .35s; }
+.tag::before { content: ""; position: absolute; top: .6rem; left: 50%; width: .8rem; height: .8rem; margin-left: -.4rem; border-radius: 50%; background: var(--bg); box-shadow: inset 0 0 0 2px rgba(0,0,0,.15); }
+.stage.open .tag { transform: translate(-50%, -50%) scale(1) rotate(-3deg); opacity: 1; }
+.tag .to { font-size: .75rem; letter-spacing: .14em; text-transform: uppercase; margin: .6rem 0 .2rem; }
+.tag .name { font-family: var(--hand); font-size: clamp(2.4rem, 12vw, 3.4rem); line-height: 1; margin: 0; overflow-wrap: anywhere; }
+.tag .from { font-size: .85rem; margin: .5rem 0 0; }
+
+.details { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .75rem; width: 100%; margin-top: 1rem; }
+.detail { border-top: 1.5px solid var(--line); padding-top: .5rem; text-align: left; }
+.detail dt { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.detail dd { margin: .15rem 0 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+.testbadge { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--berry); border: 1.5px solid var(--berry); border-radius: 999px; padding: .2rem .6rem; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<canvas id="snow" aria-hidden="true"></canvas>
+<main>
+  <span class="testbadge">Test run</span>
+  <div>
+    <p class="eyebrow">Secret Santa 2026</p>
+    <h1 id="hello">Your gift is waiting</h1>
+  </div>
+  <p class="lede" id="lede">Pick your name, enter the four-digit code Tom texted you, then tap the box to see who you're shopping for. Keep it to yourself.</p>
+
+  <form id="unlock" autocomplete="off">
+    <label for="who-am-i">I am</label>
+    <select id="who-am-i" aria-describedby="err"><option value="">Choose your name</option></select>
+    <label for="code">My code</label>
+    <input id="code" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="••••" aria-describedby="err">
+    <button class="go" type="submit">Unlock</button>
+    <p class="err" id="err" role="alert"></p>
+  </form>
+
+  <div class="stage locked" id="stage">
+    <button class="gift" id="gift" type="button" disabled aria-label="Open your gift">
+      <span class="box"></span><span class="ribbon-v"></span><span class="ribbon-h"></span><span class="lid"></span><span class="bow"></span>
+      <span class="tap" id="tapText">Locked</span>
+    </button>
+    <div class="tag" id="tag" aria-live="polite">
+      <p class="to">You're Secret Santa for</p>
+      <p class="name" id="who">&nbsp;</p>
+      <p class="from">Shh. Don't tell.</p>
+    </div>
+  </div>
+
+  <dl class="details">
+    <div class="detail"><dt>Budget</dt><dd>$50</dd></div>
+    <div class="detail"><dt>Exchange</dt><dd>Dec 25</dd></div>
+  </dl>
+</main>
+
+<script>
+const PEOPLE = [{"id": "tom-old", "label": "Tom (Old)", "salt": "yaKe8VMcTRBbf/9A7EHs9Q==", "ct": "27temA==", "chk": "ee68a9d142fb9337"}, {"id": "leslie", "label": "Leslie", "salt": "L6aLvJKz+1HmvyVFl7FXDg==", "ct": "6S6FhA==", "chk": "c750ac15b2a0e7af"}, {"id": "tom", "label": "Tom (Young)", "salt": "ey3vPf+nxS26TwX7e9VoXA==", "ct": "8oywIw==", "chk": "4d6b3059200bcbec"}, {"id": "sarah", "label": "Sarah", "salt": "sCgps7R1EoGlMy/ABCg9Pw==", "ct": "PJldNw==", "chk": "dc53e821c27031c2"}, {"id": "mandy", "label": "Mandy", "salt": "EXDS/Fvhl3dJzC8Rk0uvZA==", "ct": "HicWgA==", "chk": "3a411a551dad28fc"}, {"id": "alex", "label": "Alex", "salt": "O4JX5k2Ae8Ea/IIE8p1hag==", "ct": "R/VN3Q==", "chk": "b0723a9a96ed3d3b"}, {"id": "kara", "label": "Kara", "salt": "XBh5gFB7apXS++wo1gl0Gg==", "ct": "47tl6w==", "chk": "dddcf30bcf88cb42"}, {"id": "nick", "label": "Nick", "salt": "zZC+0RzaEUkCoXYWxWiYrQ==", "ct": "LC6uUw==", "chk": "5735c65e49ba343f"}];
+const CLOSES = new Date(2026, 11, 27); // locks at midnight starting Dec 27, local time
+const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const hex = buf => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+
+async function reveal(p, code) {
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(code), "PBKDF2", false, ["deriveBits"]);
+  const key = new Uint8Array(await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt: b64(p.salt), iterations: 100000 }, base, 256));
+  if (hex(await crypto.subtle.digest("SHA-256", key)).slice(0, 16) !== p.chk) return null;
+  return new TextDecoder().decode(b64(p.ct).map((b, i) => b ^ key[i]));
+}
+
+const form = document.getElementById("unlock"), err = document.getElementById("err");
+const stage = document.getElementById("stage"), gift = document.getElementById("gift"), tapText = document.getElementById("tapText");
+const picker = document.getElementById("who-am-i"), hello = document.getElementById("hello");
+let name = null;
+
+for (const p of PEOPLE) picker.add(new Option(p.label, p.id));
+const greet = () => { const p = PEOPLE.find(x => x.id === picker.value); hello.textContent = p ? `Hi ${p.label.replace(/ \(.*\)/, "")}, your gift is waiting` : "Your gift is waiting"; };
+picker.addEventListener("change", greet);
+const fromHash = location.hash.slice(1).toLowerCase();
+if (PEOPLE.some(p => p.id === fromHash)) { picker.value = fromHash; greet(); }
+
+if (new Date() >= CLOSES) {
+  hello.textContent = "This year's exchange is over";
+  document.getElementById("lede").textContent = "Thanks for playing. See you next Christmas.";
+  form.hidden = true; stage.hidden = true;
+}
+
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+  err.textContent = "";
+  const p = PEOPLE.find(x => x.id === picker.value);
+  if (!p) { err.textContent = "Choose your name first."; return; }
+  const code = document.getElementById("code").value.trim();
+  if (!/^\d{4}$/.test(code)) { err.textContent = "Codes are four digits."; return; }
+  name = await reveal(p, code);
+  if (!name) { err.textContent = "That code doesn't match. Check the message Tom sent you."; return; }
+  stage.classList.remove("locked");
+  gift.disabled = false;
+  tapText.textContent = "Tap to open";
+  form.hidden = true;
+  gift.focus();
+});
+
+gift.addEventListener("click", () => {
+  if (!name) return;
+  document.getElementById("who").textContent = name;
+  stage.classList.add("open");
+  gift.disabled = true;
+  burst = 160;
+});
+
+/* Snow */
+const cv = document.getElementById("snow"), ctx = cv.getContext("2d");
+const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let flakes = [], burst = 0;
+function size() { cv.width = innerWidth * devicePixelRatio; cv.height = innerHeight * devicePixelRatio; }
+size(); addEventListener("resize", size);
+function add(n, top) { for (let i = 0; i < n; i++) flakes.push({ x: Math.random() * cv.width, y: top ? -10 : Math.random() * cv.height, r: (1 + Math.random() * 2.5) * devicePixelRatio, v: (.4 + Math.random()) * devicePixelRatio, d: Math.random() * 6 }); }
+add(60, false);
+function tick() {
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--snow");
+  if (burst > 0) { add(4, true); burst -= 4; }
+  for (const f of flakes) { f.y += f.v; f.d += .01; f.x += Math.sin(f.d) * .4; if (f.y > cv.height) { f.y = -10; f.x = Math.random() * cv.width; }
+    ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2); ctx.fill(); }
+  if (flakes.length > 220) flakes.splice(0, flakes.length - 220);
+  if (!still) requestAnimationFrame(tick);
+}
+tick();
+</script>
+
+</html>
