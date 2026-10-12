@@ -99,7 +99,6 @@ button.go { font: inherit; font-weight: 600; padding: .65rem 1.2rem; border: 0; 
 
 <canvas id="snow" aria-hidden="true"></canvas>
 <main>
-  <span class="testbadge">Test run</span>
   <div>
     <p class="eyebrow">Secret Santa 2026</p>
     <h1 id="hello">Your gift is waiting</h1>
@@ -129,12 +128,12 @@ button.go { font: inherit; font-weight: 600; padding: .65rem 1.2rem; border: 0; 
 
   <dl class="details">
     <div class="detail"><dt>Budget</dt><dd>$50</dd></div>
-    <div class="detail"><dt>Exchange</dt><dd>Dec 25</dd></div>
+    <div class="detail"><dt>Exchange</dt><dd>Christmas Eve</dd></div>
   </dl>
 </main>
 
 <script>
-const PEOPLE = [{"id": "tom-old", "label": "Tom (Old)", "salt": "yaKe8VMcTRBbf/9A7EHs9Q==", "ct": "27temA==", "chk": "ee68a9d142fb9337"}, {"id": "leslie", "label": "Leslie", "salt": "L6aLvJKz+1HmvyVFl7FXDg==", "ct": "6S6FhA==", "chk": "c750ac15b2a0e7af"}, {"id": "tom", "label": "Tom (Young)", "salt": "ey3vPf+nxS26TwX7e9VoXA==", "ct": "8oywIw==", "chk": "4d6b3059200bcbec"}, {"id": "sarah", "label": "Sarah", "salt": "sCgps7R1EoGlMy/ABCg9Pw==", "ct": "PJldNw==", "chk": "dc53e821c27031c2"}, {"id": "mandy", "label": "Mandy", "salt": "EXDS/Fvhl3dJzC8Rk0uvZA==", "ct": "HicWgA==", "chk": "3a411a551dad28fc"}, {"id": "alex", "label": "Alex", "salt": "O4JX5k2Ae8Ea/IIE8p1hag==", "ct": "R/VN3Q==", "chk": "b0723a9a96ed3d3b"}, {"id": "kara", "label": "Kara", "salt": "XBh5gFB7apXS++wo1gl0Gg==", "ct": "47tl6w==", "chk": "dddcf30bcf88cb42"}, {"id": "nick", "label": "Nick", "salt": "zZC+0RzaEUkCoXYWxWiYrQ==", "ct": "LC6uUw==", "chk": "5735c65e49ba343f"}];
+const PEOPLE = [{"id": "tom-old", "label": "Tom (Old)", "salt": "JB94k8vfXBa6pMtpEs7SJQ==", "ct": "DWAHXA==", "chk": "9ccf3b73886979b3"}, {"id": "leslie", "label": "Leslie", "salt": "vxQXqBiD5/199q5swiGZnQ==", "ct": "ZK4YTeI=", "chk": "6d6a8064f2bf6108"}, {"id": "tom", "label": "Tom (Young)", "salt": "YVCpfF0M1/XzuiiaNmADYw==", "ct": "Dkotwg==", "chk": "2992b4729274268a"}, {"id": "sarah", "label": "Sarah", "salt": "DnGh9ciwXEdbP9P3roa6MA==", "ct": "E40Gjw==", "chk": "941f5029ac9b8b03"}, {"id": "mandy", "label": "Mandy", "salt": "WUBqzFNN1DrjbQ0uNwkNTw==", "ct": "rVx6mMI=", "chk": "de9174f5d32126a9"}, {"id": "alex", "label": "Alex", "salt": "Q2q0vYEdW9iGcPVf2UW8AA==", "ct": "Eiu0bh5lG3jG", "chk": "7bf6847e61f21b89"}, {"id": "kara", "label": "Kara", "salt": "x051H61BbKatN5yvVyzGGw==", "ct": "TaIcj1DW", "chk": "3fbebaea0b32a419"}, {"id": "nick", "label": "Nick", "salt": "I2hDVEkaE77WOcDVWG6kWQ==", "ct": "0HmiWs4/HxyW9lk=", "chk": "5375e9ba7daafd56"}];
 const CLOSES = new Date(2026, 11, 27); // locks at midnight starting Dec 27, local time
 const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
 const hex = buf => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
